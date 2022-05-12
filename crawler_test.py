@@ -72,5 +72,4 @@ housing_support = pd.DataFrame({"title" : welfare_name[6:], "describe" : welfare
                                 "support_description" : dedicated_area[6:], "how_apply": lease_condition[6:]})
 housing_support.to_csv('./data/welfare_info/housing_support.csv', index = False, encoding="utf-8")
 
-
 driver.close()
