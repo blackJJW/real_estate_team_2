@@ -363,8 +363,112 @@ class total_public:
 
         # -------------------------------------------------------------------------------------------------------------------
         driver.close()
+
+class permanent_lease:
+    def __init__(self):
+        self.url_set = URL + service_code['영구임대']
+
+    def homeless_houshold_note(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ------- 무주택세대구성원 ----------------------------------------------------------------------------------------
+        household_member = []
+        household_note = []
+
+        homeless_household_member_table = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[3]/div/ul/li[1]/ul/li[2]/table')
+        homeless_household_member_table_tbody = homeless_household_member_table.find_element_by_tag_name('tbody')
+
+        for tr in homeless_household_member_table_tbody.find_elements_by_tag_name('tr')[:5]:
+            household_member.append(tr.find_element_by_tag_name('th').get_attribute('innerText'))
+            for td in tr.find_elements_by_tag_name('td')[:1]:
+                household_note.append(td.get_attribute('innerText'))
+
+        for i in range(len(household_member)):
+            household_member[i] = household_member[i].replace('\n', ', ')
+
+        household_note.insert(2, household_note[2])
+
+        house_hold_df = pd.DataFrame({"member": household_member, "note": household_note})
+        house_hold_df.to_csv('./data/service_guide/permanent_lease/homeless_household_note.csv',
+                             index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+    def moving_in_qual_rank(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ----- 입주자격 및 선정순위 ---------------------------------------------------------------------------------------
+        rank = []
+        moving_in_qual = []
+        note = []
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr[1]/th').text
+        for i in range(3):
+            rank.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr[4]/th[2]').text
+        for i in range(9):
+            rank.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr[13]/th').text
+        for i in range(3):
+            rank.append(tmp)
+
+        moving_in_qual = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr/td[1]')
+        for i in range(len(moving_in_qual)):
+            moving_in_qual[i] = moving_in_qual[i].text
+            moving_in_qual[i] = moving_in_qual[i].replace('\n   ', '')
+
+        note = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr/td[2]')
+        for i in range(len(note)):
+            note[i] = note[i].text
+            note[i] = note[i].replace('\n  ', '')
+            note[i] = note[i].replace('\n', ' ')
+
+        moving_in_qual_rank = pd.DataFrame({'rank': rank, 'qualification': moving_in_qual, 'note': note})
+        moving_in_qual_rank.to_csv('./data/service_guide/permanent_lease/moving_in_qual_rank.csv',
+                                   index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def lease_condtion(self):
+        # ----- 임대조건 ---------------------------------------------------------------------------------------------
+        lease_condition = ['시중시세의 30% 수준']
+
+        lease_condition_df = pd.DataFrame({'condition': lease_condition})
+        lease_condition_df.to_csv('./data/service_guide/permanent_lease/lease_condition.csv', index=False,
+                                  encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+    def apply_step(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ----- 신청절차 ---------------------------------------------------------------------------------------------
+        step = []
+        step_des = []
+
+        step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[8]/div/ul/li/ul/li/dl/dt')
+        for i in range(len(step)):
+            step[i] = step[i].text
+            step[i] = step[i].replace('\n', ' ')
+
+        step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[8]/div/ul/li/ul/li/dl/dd')
+        for i in range(len(step_des)):
+            step_des[i] = step_des[i].text
+            step_des[i] = step_des[i].replace('\n  ', '')
+            step_des[i] = step_des[i].replace('\n', ' ')
+
+        apply_step = pd.DataFrame({"step": step, "describe": step_des})
+        apply_step.to_csv('./data/service_guide/permanent_lease/apply_step.csv', index=False, encoding='utf-8')
+
+        # -------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
 if __name__ == '__main__':
-    url_set = URL + service_code['통합공공임대']
+    url_set = URL + service_code['영구임대']
     
     driver = selenium_set()
     driver.get(url_set)
