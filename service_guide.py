@@ -8,9 +8,10 @@ import pandas as pd
 import urllib.request
 
 # ------------------------------------------------------------------------------------------------------
-service_code = {'통합공공임대' : 'RH112', '영구임대' : 'RH103', '국민임대' : 'RH104', '장기전세' : 'RH105',
-                '공공임대' : 'RH106', '전세임대' : 'RH107', '행복주택' : 'RH108', '공공지원민간임대' : 'RH109',
-                '주거복지동주택' : 'RH110', '공공기숙사' : 'RH111'}
+service_code = {'통합공공임대' : 'RH112', '영구임대' : 'RH103', '국민임대' : 'RH104',
+                '장기전세' : 'RH105', '공공임대' : 'RH106', '전세임대' : 'RH107',
+                '행복주택' : 'RH108', '공공지원민간임대' : 'RH109', '주거복지동주택' : 'RH110',
+                '공공기숙사' : 'RH111'}
 
 URL = "https://www.myhome.go.kr/hws/portal/cont/selectContRentalView.do#guide="
 # ------------------------------------------------------------------------------------------------------
@@ -29,12 +30,18 @@ def selenium_set():
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36")
 
-    prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2, 'popups': 2,
-                                                        'geolocation': 2, 'notifications' : 2, 'auto_select_certificate': 2,
-                                                        'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2, 'media_stream' : 2,
-                                                        'media_stream_mic' : 2, 'media_stream_camera': 2, 'protocol_handlers' : 2,
-                                                        'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2, 'push_messaging' : 2,
-                                                        'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2, 'protected_media_identifier': 2,
+    prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2,
+                                                        'popups': 2,
+                                                        'geolocation': 2, 'notifications' : 2,
+                                                        'auto_select_certificate': 2,
+                                                        'fullscreen' : 2, 'mouselock' : 2, 'mixed_script': 2,
+                                                        'media_stream' : 2,
+                                                        'media_stream_mic' : 2, 'media_stream_camera': 2,
+                                                        'protocol_handlers' : 2,
+                                                        'ppapi_broker' : 2, 'automatic_downloads': 2, 'midi_sysex' : 2,
+                                                        'push_messaging' : 2,
+                                                        'ssl_cert_decisions': 2, 'metro_switch_to_desktop' : 2,
+                                                        'protected_media_identifier': 2,
                                                         'app_banner': 2, 'site_engagement' : 2, 'durable_storage' : 2}}
     options.add_experimental_option('prefs', prefs)
 
@@ -59,7 +66,7 @@ class total_public:
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ------- 무주택세대구성원 ----------------------------------------------------------------------------------------------------
+        # ------- 무주택세대구성원 ----------------------------------------------------------------------------------------
         household_member = []
         household_note = []
 
@@ -78,15 +85,16 @@ class total_public:
         household_note.insert(2, household_note[2])
 
         house_hold_df = pd.DataFrame({"member": household_member, "note": household_note})
-        house_hold_df.to_csv('./data/service_guide/total_public/homeless_household_note.csv', index=False, encoding='utf-8')
-        # ----------------------------------------------------------------------------------------------------------------------
+        house_hold_df.to_csv('./data/service_guide/total_public/homeless_household_note.csv',
+                             index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def median_income_table(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 가구원수별 기준 중위 소득-------------------------------------------------------------------------------------------
+        # ----- 가구원수별 기준 중위 소득-----------------------------------------------------------------------------------
         household_num = []
         household_num_1 = []
         median_income_100 = []
@@ -110,9 +118,9 @@ class total_public:
                                          "median_income(150%)": median_income_150_1})
         median_income_df.to_csv('./data/service_guide/total_public/household_num_median_income.csv',
                                 index=False, encoding='utf-8')
-        # -----------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
 
-        # ----- 자산가액 ---------------------------------------------------------------------------------------------------
+        # ----- 자산가액 -------------------------------------------------------------------------------------------------
         asset_value = []
         asset_criteria = []
         asset_criteria_money = []
@@ -143,17 +151,19 @@ class total_public:
             driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[2]/div/div/span[6]').text)
 
         asset_value_df = pd.DataFrame({"type" : asset_value, "criteria" : asset_criteria,
-                                       "criteria_money" : asset_criteria_money, "criteria_extra" : asset_criteria_extra})
+                                       "criteria_money" : asset_criteria_money,
+                                       "criteria_extra" : asset_criteria_extra})
 
-        asset_value_df.to_csv('./data/service_guide/total_public/median_income_extra.csv', index=False, encoding='utf-8')
-        # ----------------------------------------------------------------------------------------------------------------
+        asset_value_df.to_csv('./data/service_guide/total_public/median_income_extra.csv',
+                              index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def income_asset_cal(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 소득, 자산 산정 방법 ----------------------------------------------------------------------------------------
+        # ----- 소득, 자산 산정 방법 --------------------------------------------------------------------------------------
         asset_class = []
         how_cal = []
 
@@ -178,13 +188,13 @@ class total_public:
 
         income_asset_cal = pd.DataFrame({"class": asset_class, "how": how_cal})
         income_asset_cal.to_csv('./data/service_guide/total_public/income_asset_cal.csv', index=False, encoding='utf-8')
-        # -----------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def normal_supply_qul_choose(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
-        # ----- 일반공급 입주자격 및 입주자 선정방법 -----------------------------------------------------------------------------
+        # ----- 일반공급 입주자격 및 입주자 선정방법 -------------------------------------------------------------------------
         normal_supply_class = []
         moving_in_qualification = []
         how_choose = []
@@ -210,14 +220,14 @@ class total_public:
                                                     "how_choose": how_choose})
         normal_supply_qul_choose_df.to_csv('./data/service_guide/total_public/normal_supply_qual_choose.csv',
                                            index=False, encoding='utf-8')
-        # ------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def priority_supply_qualification(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 우선공급 입주자격 ---------------------------------------------------------------------------------------------
+        # ----- 우선공급 입주자격 -----------------------------------------------------------------------------------------
         prio_supply_class = []
         prio_supply_qual = []
 
@@ -237,14 +247,14 @@ class total_public:
         prio_supply_df = pd.DataFrame({"class": prio_supply_class, "qualification": prio_supply_qual})
         prio_supply_df.to_csv('./data/service_guide/total_public/priorty_supply_qualification.csv',
                               index=False, encoding='utf-8')
-        # -------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def prio_points(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 우선공급 경쟁시 입주자 선정방법 ---------------------------------------------------------------------------------------------
+        # ----- 우선공급 경쟁시 입주자 선정방법 ------------------------------------------------------------------------------
         point_item = []
         plus_point_3 = []
         plus_point_2 = []
@@ -289,14 +299,14 @@ class total_public:
                                        "plus_1": plus_point_1, "minus_5": minus_point_5, "minus_3": minus_point_3})
 
         prio_points_df.to_csv('./data/service_guide/total_public/prio_points.csv', index=False, encoding='utf-8')
-        # -------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def moving_in_selection_criteria(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 입주자 선정 기준 ---------------------------------------------------------------------------------------------
+        # ----- 입주자 선정 기준 ------------------------------------------------------------------------------------------
         supply_item = []
         item = []
         item_des = []
@@ -311,22 +321,28 @@ class total_public:
         selection_criteria_df.to_csv('./data/service_guide/total_public/moving_in_seleciton_criteria.csv',
                                      index=False, encoding='utf-8')
 
-        # -------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
     def lease_condition(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 임대조건 ---------------------------------------------------------------------------------------------
+        # ----- 임대조건 -------------------------------------------------------------------------------------------------
 
         st_mid_income = [driver.find_element_by_xpath(
             '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[1]').text]
-        under_30 = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[2]').text]
-        c_30_50 = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[3]').text]
-        c_50_70 = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[4]').text]
-        c_70_100 = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[5]').text]
-        c_100_130 = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[6]').text]
-        c_130_150 = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[7]').text]
+        under_30 = [driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[2]').text]
+        c_30_50 = [driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[3]').text]
+        c_50_70 = [driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[4]').text]
+        c_70_100 = [driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[5]').text]
+        c_100_130 = [driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[6]').text]
+        c_130_150 = [driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div[4]/ul/li/table/tbody/tr/td[7]').text]
 
         lease_condition = pd.DataFrame({'st_mid_income': st_mid_income,
                                         'under_30%': under_30,
@@ -336,15 +352,16 @@ class total_public:
                                         '100_130%': c_100_130,
                                         '130_150%': c_130_150})
 
-        lease_condition.to_csv('./data/service_guide/total_public/lease_condition.csv', index=False, encoding='utf-8')
-        # -------------------------------------------------------------------------------------------------------------------
+        lease_condition.to_csv('./data/service_guide/total_public/lease_condition.csv',
+                               index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
     def apply_step(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 신청절차 ---------------------------------------------------------------------------------------------
+        # ----- 신청절차 -------------------------------------------------------------------------------------------------
         step = []
         step_des = []
 
@@ -360,9 +377,10 @@ class total_public:
             step_des[i] = step_des[i].replace('\n', ' ')
 
         apply_step = pd.DataFrame({"step": step, "describe": step_des})
-        apply_step.to_csv('./data/service_guide/total_public/apply_step.csv', index=False, encoding='utf-8')
+        apply_step.to_csv('./data/service_guide/total_public/apply_step.csv',
+                          index=False, encoding='utf-8')
 
-        # -------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
 class permanent_lease:
@@ -435,7 +453,7 @@ class permanent_lease:
         driver.close()
 
     def lease_condtion(self):
-        # ----- 임대조건 ---------------------------------------------------------------------------------------------
+        # ----- 임대조건 -------------------------------------------------------------------------------------------------
         lease_condition = ['시중시세의 30% 수준']
 
         lease_condition_df = pd.DataFrame({'condition': lease_condition})
@@ -447,7 +465,7 @@ class permanent_lease:
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 신청절차 ---------------------------------------------------------------------------------------------
+        # ----- 신청절차 -------------------------------------------------------------------------------------------------
         step = []
         step_des = []
 
@@ -463,9 +481,10 @@ class permanent_lease:
             step_des[i] = step_des[i].replace('\n', ' ')
 
         apply_step = pd.DataFrame({"step": step, "describe": step_des})
-        apply_step.to_csv('./data/service_guide/permanent_lease/apply_step.csv', index=False, encoding='utf-8')
+        apply_step.to_csv('./data/service_guide/permanent_lease/apply_step.csv',
+                          index=False, encoding='utf-8')
 
-        # -------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
 class kukmin_lease:
@@ -476,7 +495,7 @@ class kukmin_lease:
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ------- 무주택세대구성원 ----------------------------------------------------------------------------------------------------
+        # ------- 무주택세대구성원 ----------------------------------------------------------------------------------------
         household_member = []
         household_note = []
 
@@ -497,8 +516,8 @@ class kukmin_lease:
         house_hold_df = pd.DataFrame({"member": household_member, "note": household_note})
         house_hold_df.to_csv('./data/service_guide/kukmin_lease/homeless_household_note.csv', index=False,
                              encoding='utf-8')
-        # ------------------------------------------------------------------------------------------------------------------
-        # ------- 소득 전년도 도시근로자 ----------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
+        # ------- 소득 전년도 도시근로자 -----------------------------------------------------------------------------------
         household_mem_num = []
         month_avg_income_100 = []
         month_avg_income_50 = []
@@ -528,10 +547,11 @@ class kukmin_lease:
                                   "month_avg_income(50%)": month_avg_income_50,
                                   "month_avg_income(70%)": month_avg_income_70})
 
-        income_df.to_csv('./data/service_guide/kukmin_lease/month_avg_income.csv', index=False, encoding='utf-8')
-        # ------------------------------------------------------------------------------------------------------------------
+        income_df.to_csv('./data/service_guide/kukmin_lease/month_avg_income.csv',
+                         index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
 
-        # ----- 자산가액 ---------------------------------------------------------------------------------------------------
+        # ----- 자산가액 -------------------------------------------------------------------------------------------------
         asset_value = []
         asset_criteria = []
         asset_criteria_money = []
@@ -564,8 +584,8 @@ class kukmin_lease:
         asset_value_df = pd.DataFrame({"type": asset_value, "criteria": asset_criteria,
                                        "criteria_money": asset_criteria_money, "criteria_extra": asset_criteria_extra})
 
-        asset_value_df.to_csv('./data/service_guide/kukmin_lease/month_avg_income_extra.csv', index=False,
-                              encoding='utf-8')
+        asset_value_df.to_csv('./data/service_guide/kukmin_lease/month_avg_income_extra.csv',
+                              index=False, encoding='utf-8')
         # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
@@ -573,7 +593,7 @@ class kukmin_lease:
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 소득, 자산 산정 방법 ----------------------------------------------------------------------------------------
+        # ----- 소득, 자산 산정 방법 --------------------------------------------------------------------------------------
         asset_class = []
         how_cal = []
 
@@ -597,8 +617,9 @@ class kukmin_lease:
             how_cal[i] = how_cal[i].replace('\n', '')
 
         income_asset_cal = pd.DataFrame({"class": asset_class, "how": how_cal})
-        income_asset_cal.to_csv('./data/service_guide/kukmin_lease/income_asset_cal.csv', index=False, encoding='utf-8')
-        # -----------------------------------------------------------------------------------------------------------------
+        income_asset_cal.to_csv('./data/service_guide/kukmin_lease/income_asset_cal.csv',
+                                index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
 
         driver.close()
 
@@ -606,12 +627,13 @@ class kukmin_lease:
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 일반공급 입주자격 및 입주자 선정방법 -----------------------------------------------------------------------------
+        # ----- 일반공급 입주자격 및 입주자 선정방법 -------------------------------------------------------------------------
         normal_supply_class = []
         moving_in_qualification = []
         rank = []
 
-        normal_supply_class = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/table/tbody/tr/th')
+        normal_supply_class = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[5]/div/ul/li/table/tbody/tr/th')
         for i in range(len(normal_supply_class)):
             normal_supply_class[i] = normal_supply_class[i].text
             normal_supply_class[i] = normal_supply_class[i].replace('\n', '')
@@ -634,13 +656,13 @@ class kukmin_lease:
                                                     "rank": rank})
         normal_supply_qul_choose_df.to_csv('./data/service_guide/kukmin_lease/normal_supply_qual_choose.csv',
                                            index=False, encoding='utf-8')
-        # ------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
 
     def priority_supply_qualification(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # ----- 우선공급 입주자격 ---------------------------------------------------------------------------------------------
+        # ----- 우선공급 입주자격 -----------------------------------------------------------------------------------------
         prio_supply_class = []
         prio_supply_qual = []
 
@@ -651,7 +673,8 @@ class kukmin_lease:
             prio_supply_class[i] = prio_supply_class[i].text
             prio_supply_class[i] = prio_supply_class[i].replace('\n', '')
 
-        prio_supply_qual = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div/ul/li[1]/table/tbody/tr/td')
+        prio_supply_qual = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[6]/div/ul/li[1]/table/tbody/tr/td')
 
         for i in range(len(prio_supply_qual)):
             prio_supply_qual[i] = prio_supply_qual[i].text
@@ -663,7 +686,7 @@ class kukmin_lease:
         prio_supply_df.to_csv('./data/service_guide/kukmin_lease/priorty_supply_qualification.csv',
                               index=False, encoding='utf-8')
         # --------------------------------------------------------------------------------------------------------------
-        # ----- 신혼부부 ----------------------------------------------------------------------------------------------------
+        # ----- 신혼부부 -------------------------------------------------------------------------------------------------
         class_new_marriage = []
         how_choose = []
 
@@ -681,14 +704,14 @@ class kukmin_lease:
             how_choose[i] = how_choose[i].replace('\n', ' ')
 
         case_new_marriage = pd.DataFrame({"class": class_new_marriage, "how_choose": how_choose})
-        case_new_marriage.to_csv('./data/service_guide/kukmin_lease/case_new_marriage.csv', index=False,
-                                 encoding='utf-8')
-        # ------------------------------------------------------------------------------------------------------------------
+        case_new_marriage.to_csv('./data/service_guide/kukmin_lease/case_new_marriage.csv',
+                                 index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
     def moving_in_selection_criteria(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
 
-        # -----일반 공급 대상자 입주자 선정기준---------------------------------------------------------------------------------------
+        # -----일반 공급 대상자 입주자 선정기준-------------------------------------------------------------------------------
         img_1 = driver.find_element_by_xpath(
             '//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[1]/div[1]/img').get_attribute('src')
         urllib.request.urlretrieve(img_1, './data/service_guide/kukmin_lease/nor_under_50m^2_house.jpg')
@@ -697,24 +720,27 @@ class kukmin_lease:
             '//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[1]/div[2]/img').get_attribute('src')
         urllib.request.urlretrieve(img_2, './data/service_guide/kukmin_lease/nor_over_50m^2_house.jpg')
         driver.close()
-        # ------------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
 
-        # ---- 우선공급 대상자 입주가 선정기준 -----------------------------------------------------------------------------------
+        # ---- 우선공급 대상자 입주가 선정기준 -------------------------------------------------------------------------------
         class_prio = []
         class_area = []
         selection_procedure = []
         note = []
 
-        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[2]/table/tbody/tr[1]/th').text
+        tmp = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[2]/table/tbody/tr[1]/th').text
         tmp = tmp.replace('\n', ' ')
         class_prio.append(tmp)
         class_prio.append(tmp)
 
-        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[2]/table/tbody/tr[3]/th').text
+        tmp = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[2]/table/tbody/tr[3]/th').text
         class_prio.append(tmp)
         class_prio.append(tmp)
 
-        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[2]/table/tbody/tr[5]/th').text
+        tmp = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[8]/div/ul/li/ul/li[2]/table/tbody/tr[5]/th').text
         tmp = tmp.replace('\n', ' ')
         class_prio.append(tmp)
         class_prio.append(tmp)
@@ -739,8 +765,8 @@ class kukmin_lease:
     def lease_condition(self):
         lease_condition = ['시중시세의 60~80% 수준']
         lease_condition_df = pd.DataFrame({"condition": lease_condition})
-        lease_condition_df.to_csv('./data/service_guide/kukmin_lease/lease_condition.csv', index=False,
-                                  encoding='utf-8')
+        lease_condition_df.to_csv('./data/service_guide/kukmin_lease/lease_condition.csv',
+                                  index=False, encoding='utf-8')
 
     def apply_step(self):
         driver = selenium_set(self)
@@ -762,9 +788,10 @@ class kukmin_lease:
             step_des[i] = step_des[i].replace('\n', ' ')
 
         apply_step = pd.DataFrame({"step": step, "describe": step_des})
-        apply_step.to_csv('./data/service_guide/kukmin_lease/apply_step.csv', index=False, encoding='utf-8')
+        apply_step.to_csv('./data/service_guide/kukmin_lease/apply_step.csv',
+                          index=False, encoding='utf-8')
 
-        # -------------------------------------------------------------------------------------------------------------------
+        # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
 
