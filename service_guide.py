@@ -707,6 +707,8 @@ class kukmin_lease:
         case_new_marriage.to_csv('./data/service_guide/kukmin_lease/case_new_marriage.csv',
                                  index=False, encoding='utf-8')
         # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
     def moving_in_selection_criteria(self):
         driver = selenium_set(self)
         driver.get(self.url_set)
@@ -794,14 +796,204 @@ class kukmin_lease:
         # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
+class long_term_rent:
+    def __init__(self):
+        self.url_set = URL + service_code['장기전세']
+
+    def about_deposit(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ------- 임대보증금 수준 ---------------------------------------------------------------------------------------
+        deposit_des = []
+
+        deposit_des.append(driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li').text)
+
+        for i in range(len(deposit_des)):
+            deposit_des[i] = deposit_des[i].replace('\n', '')
+
+        about_deposit = pd.DataFrame({"deposit": deposit_des})
+
+        about_deposit.to_csv('./data/service_guide/long_term_rent/about_deposit.csv',
+                             index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+
+    def homeless_houshold_note(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ------- 무주택세대구성원 ----------------------------------------------------------------------------------------
+        household_member = []
+        household_note = []
+
+        homeless_household_member_table = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[1]/ul/li[2]/table')
+        homeless_household_member_table_tbody = homeless_household_member_table.find_element_by_tag_name('tbody')
+
+        for tr in homeless_household_member_table_tbody.find_elements_by_tag_name('tr')[:5]:
+            household_member.append(tr.find_element_by_tag_name('th').get_attribute('innerText'))
+            for td in tr.find_elements_by_tag_name('td')[:1]:
+                household_note.append(td.get_attribute('innerText'))
+
+        for i in range(len(household_member)):
+            household_member[i] = household_member[i].replace('\n', ', ')
+
+        household_note.insert(2, household_note[2])
+
+        house_hold_df = pd.DataFrame({"member": household_member, "note": household_note})
+        house_hold_df.to_csv('./data/service_guide/long_term_rent/homeless_household_note.csv',
+                             index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+    def income_criteria(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ------- 소득 - 1 ---------------------------------------------------------------------------------------
+        income_class = []
+        income_des = []
+
+        income_class = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/table[1]/tbody/tr/th')
+
+        for i in range(len(income_class)):
+            income_class[i] = income_class[i].text
+            income_class[i] = income_class[i].replace('\n', ' ')
+
+        income_des = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/table[1]/tbody/tr/td')
+
+        for i in range(len(income_des)):
+            income_des[i] = income_des[i].text
+            income_des[i] = income_des[i].replace('\n', '')
+
+        income_by_area = pd.DataFrame({"class": income_class, "description": income_des})
+        income_by_area.to_csv('./data/service_guide/long_term_rent/income_by_area.csv',
+                              index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        # ------- 소득 전년도 도시근로자 -----------------------------------------------------------------------------------
+        household_mem_num = []
+        month_avg_income_100 = []
+        month_avg_income_50 = []
+        month_avg_income_70 = []
+
+        household_mem_num = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/table[2]/tbody/tr/th[1]')
+        for i in range(len(household_mem_num)):
+            household_mem_num[i] = household_mem_num[i].text
+
+        month_avg_income_100 = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/table[2]/tbody/tr/th[2]')
+        for i in range(len(month_avg_income_100)):
+            month_avg_income_100[i] = month_avg_income_100[i].text
+
+        month_avg_income_50 = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/table[2]/tbody/tr/th[3]')
+        for i in range(len(month_avg_income_50)):
+            month_avg_income_50[i] = month_avg_income_50[i].text
+
+        month_avg_income_70 = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/table[2]/tbody/tr/th[4]')
+        for i in range(len(month_avg_income_70)):
+            month_avg_income_70[i] = month_avg_income_70[i].text
+
+        income_df = pd.DataFrame({"mem_num": household_mem_num, "month_avg_income(100%)": month_avg_income_100,
+                                  "month_avg_income(50%)": month_avg_income_50,
+                                  "month_avg_income(70%)": month_avg_income_70})
+
+        income_df.to_csv('./data/service_guide/long_term_rent/month_avg_income.csv',
+                         index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        # ----- extra -------------------------------------------------------------------------------------------------
+        asset_criteria = []
+        asset_criteria_money = []
+        asset_criteria_extra = []
+
+        for i in [3, 5]:
+            asset_criteria.append(driver.find_element_by_xpath(
+                f'//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/span[{i}]').text)
+
+        for i in [1, 2]:
+            asset_criteria_money.append(driver.find_element_by_xpath(
+                f'//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/strong[{i}]').text)
+
+        for i in [4, 6]:
+            asset_criteria_extra.append(driver.find_element_by_xpath(
+                f'//*[@id="sub_content"]/div[4]/div/ul/li[2]/div/div/span[{i}]').text)
+
+        asset_value_df = pd.DataFrame({"criteria": asset_criteria, "criteria_money": asset_criteria_money,
+                                       "criteria_extra": asset_criteria_extra})
+
+        asset_value_df.to_csv('./data/service_guide/long_term_rent/month_avg_income_extra.csv',
+                              index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def priority_supply_qualification(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ----- 우선공급 입주자격 -----------------------------------------------------------------------------------------
+        prio_supply_class = []
+        prio_supply_qual = []
+
+        prio_supply_class = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[5]/div/ul/li[1]/table/tbody/tr/th')
+
+        for i in range(len(prio_supply_class)):
+            prio_supply_class[i] = prio_supply_class[i].text
+            prio_supply_class[i] = prio_supply_class[i].replace('\n', '')
+
+        prio_supply_qual = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[5]/div/ul/li[1]/table/tbody/tr/td')
+
+        for i in range(len(prio_supply_qual)):
+            prio_supply_qual[i] = prio_supply_qual[i].text
+            prio_supply_qual[i] = prio_supply_qual[i].replace('\n\n', '')
+            prio_supply_qual[i] = prio_supply_qual[i].replace('\n    ', '')
+            prio_supply_qual[i] = prio_supply_qual[i].replace('\n', ' ')
+
+        prio_supply_df = pd.DataFrame({"class": prio_supply_class, "qualification": prio_supply_qual})
+        prio_supply_df.to_csv('./data/service_guide/long_term_rent/priorty_supply_qualification.csv',
+                              index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+        # ----- 신혼부부 -------------------------------------------------------------------------------------------------
+        class_new_marriage = []
+        how_choose = []
+
+        class_new_marriage = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[5]/div/ul/li[2]/table/tbody/tr/th')
+
+        for i in range(len(class_new_marriage)):
+            class_new_marriage[i] = class_new_marriage[i].text
+
+        how_choose = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li[2]/table/tbody/tr/td')
+        for i in range(len(how_choose)):
+            how_choose[i] = how_choose[i].text
+            how_choose[i] = how_choose[i].replace('\n   ', ' ')
+            how_choose[i] = how_choose[i].replace('\n\n', ' ')
+            how_choose[i] = how_choose[i].replace('\n', ' ')
+
+        case_new_marriage = pd.DataFrame({"class": class_new_marriage, "how_choose": how_choose})
+        case_new_marriage.to_csv('./data/service_guide/long_term_rent/case_new_marriage.csv',
+                                 index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
 
 if __name__ == '__main__':
-    url_set = URL + service_code['국민임대']
+    url_set = URL + service_code['공공임대']
     
     driver = selenium_set()
     driver.get(url_set)
 
+    # ----- 동일순위 경쟁시 입주자 선정방법 -----------------------------------------------------------------------------------------
 
-
+    # --------------------------------------------------------------------------------------------------------------
 
     driver.close()
