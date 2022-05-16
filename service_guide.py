@@ -986,13 +986,149 @@ class long_term_rent:
 
         driver.close()
 
+class public_lease:
+    def __init__(self):
+        self.url_set = URL + service_code['공공임대']
+
+    def housing_type(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 주택 유형 -----------------------------------------------------------------------------------------
+        type = []
+        type_des = []
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[1]').text
+
+        type.append(tmp[:13])
+        type_des.append(tmp[16:])
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[2]').text
+
+        type.append(tmp[:8])
+        type_des.append(tmp[11:])
+
+        housing_type = pd.DataFrame({"type": type, "description": type_des})
+        housing_type.to_csv("./data/service_guide/public_lease/housing_type.csv",
+                            index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+
+    def moving_in_selection_rank(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 입주자 선정 순위 -----------------------------------------------------------------------------------------
+        rank = []
+        qual = []
+
+        rank = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr/th')
+        for i in range(len(rank)):
+            rank[i] = rank[i].text
+
+        qual = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li/table/tbody/tr/td')
+        for i in range(len(qual)):
+            qual[i] = qual[i].text
+            qual[i] = qual[i].replace('\n                    ', '')
+            qual[i] = qual[i].replace('\n          ', '')
+            qual[i] = qual[i].replace('\n', '')
+
+        moving_in_selection_rank = pd.DataFrame({"rank": rank, "qualification": qual})
+        moving_in_selection_rank.to_csv("./data/service_guide/public_lease/moving_in_selection_rank.csv",
+                                        index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+    def sepcial_supply(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 특별공급 -----------------------------------------------------------------------------------------
+        classification = []
+        ratio = []
+        qual = []
+
+        classification = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/table/tbody/tr/th')
+        for i in range(len(classification)):
+            classification[i] = classification[i].text
+            classification[i] = classification[i].replace('\n', ' ')
+
+        ratio = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/table/tbody/tr/td[1]')
+        for i in range(len(ratio)):
+            ratio[i] = ratio[i].text
+
+        qual = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/table/tbody/tr/td[2]')
+        for i in range(len(qual)):
+            qual[i] = qual[i].text
+            qual[i] = qual[i].replace('\n', ' ')
+
+        special_supply = pd.DataFrame({"class": classification, "ratio": ratio, "qual": qual})
+        special_supply.to_csv("./data/service_guide/public_lease/special_supply.csv",
+                              index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+    def lease_condition(self):
+        # ----- 임대조건 -----------------------------------------------------------------------------------------
+        con = ['시중 전세 시세의 90% 수준']
+
+        lease_condition = pd.DataFrame({'condition': con})
+        lease_condition.to_csv('./data/service_guide/public_lease/lease_condition.csv',
+                               index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+    def apply_step(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 신청절차 -----------------------------------------------------------------------------------------
+        step = []
+        step_des = []
+
+        step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div[4]/ul/li/ul/li/dl/dt')
+        for i in range(len(step)):
+            step[i] = step[i].text
+            step[i] = step[i].replace('\n', ' ')
+
+        step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div[4]/ul/li/ul/li/dl/dd')
+        for i in range(len(step_des)):
+            step_des[i] = step_des[i].text
+            step_des[i] = step_des[i].replace('\n  ', '')
+            step_des[i] = step_des[i].replace('\n', ' ')
+
+        apply_step = pd.DataFrame({"step": step, "describe": step_des})
+        apply_step.to_csv('./data/service_guide/public_lease/apply_step.csv',
+                          index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+
 if __name__ == '__main__':
     url_set = URL + service_code['공공임대']
     
     driver = selenium_set()
     driver.get(url_set)
 
-    # ----- 동일순위 경쟁시 입주자 선정방법 -----------------------------------------------------------------------------------------
+    # ----- 신청절차 -----------------------------------------------------------------------------------------
+    step = []
+    step_des = []
+
+    step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div[4]/ul/li/ul/li/dl/dt')
+    for i in range(len(step)):
+        step[i] = step[i].text
+        step[i] = step[i].replace('\n', ' ')
+
+    step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div[4]/ul/li/ul/li/dl/dd')
+    for i in range(len(step_des)):
+        step_des[i] = step_des[i].text
+        step_des[i] = step_des[i].replace('\n  ', '')
+        step_des[i] = step_des[i].replace('\n', ' ')
+
+    apply_step = pd.DataFrame({"step": step, "describe": step_des})
+    apply_step.to_csv('./data/service_guide/public_lease/apply_step.csv',
+                      index=False, encoding='utf-8')
+
 
     # --------------------------------------------------------------------------------------------------------------
 
