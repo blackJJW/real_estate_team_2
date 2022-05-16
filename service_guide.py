@@ -28,7 +28,7 @@ def selenium_set():
     options.add_argument("disable-gpu")
     options.add_argument("window-size=1440x900")
     options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.54 Safari/537.36")
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36")
 
     prefs = {'profile.default_content_setting_values': {'cookies' : 2, 'images': 2, 'plugins' : 2,
                                                         'popups': 2,
@@ -1267,14 +1267,217 @@ class Happy_House:
     def __init__(self):
         self.url_set = URL + service_code['행복주택']
 
+    def feature_def(self):
+        driver = selenium_set()
+        dirver.get(self.url_set)
+
+        # ----- 특장점 -----------------------------------------------------------------------------------------
+        feature = []
+        note = []
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/ul/li[2]').text
+        tmp_note = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/ul/li[2]/span').text
+        tmp = tmp.replace(tmp_note, '')
+        tmp = tmp.replace('\n', '')
+        tmp = tmp.replace('· ', '')
+        tmp_note = tmp_note.replace('- ', '')
+        feature.append(tmp)
+        note.append(tmp_note)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/ul/li[3]').text
+        tmp_note = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/ul/li[3]/span').text
+        tmp = tmp.replace(tmp_note, '')
+        tmp = tmp.replace('\n', '')
+        tmp = tmp.replace('· ', '')
+        tmp_note = tmp_note.replace('- ', '')
+        feature.append(tmp)
+        note.append(tmp_note)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/ul/li[4]').text
+        tmp_note = driver.find_element_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/ul/li[4]/span').text
+        tmp = tmp.replace(tmp_note, '')
+        tmp = tmp.replace('\n', '')
+        tmp = tmp.replace('· ', '')
+        tmp_note = tmp_note.replace('- ', '')
+        feature.append(tmp)
+        note.append(tmp_note)
+
+        feature = pd.DataFrame({"feature": feature, "note": note})
+        feature.to_csv('./data/service_guide/happy_house/feature.csv',
+                       index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+        # ----- 행복 vs 공공 -----------------------------------------------------------------------------------------
+        classification = []
+        happy = []
+        public_lease = []
+        kukmin_lease = []
+        per_lease = []
+
+        classification = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/table/tbody/tr/th')
+        for i in range(len(classification)):
+            classification[i] = classification[i].text
+
+        happy = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/table/tbody/tr/td[1]')
+        for i in range(len(happy)):
+            happy[i] = happy[i].text
+            happy[i] = happy[i].replace('\n', ' ')
+
+        public_lease = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/table/tbody/tr/td[2]')
+        for i in range(len(public_lease)):
+            public_lease[i] = public_lease[i].text
+
+        kukmin_lease = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/table/tbody/tr/td[3]')
+        for i in range(len(kukmin_lease)):
+            kukmin_lease[i] = kukmin_lease[i].text
+            kukmin_lease[i] = kukmin_lease[i].replace('\n', ' ')
+
+        per_lease = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li/table/tbody/tr/td[4]')
+        for i in range(len(per_lease)):
+            per_lease[i] = per_lease[i].text
+            per_lease[i] = per_lease[i].replace('\n', ' ')
+
+        vs_table = pd.DataFrame({'class': classification, 'happy': happy, 'public_lease(10yr)': public_lease,
+                                 'kukmin_lease': kukmin_lease, 'permanent_lease': per_lease})
+
+        vs_table.to_csv('./data/service_guide/happy_house/vs_table.csv',
+                        index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+
+    def qualification_def(self):
+        driver = selenium_set()
+        dirver.get(self.url_set)
+
+        # ----- 입주 자격 -----------------------------------------------------------------------------------------
+        classification = ['대학생', '취업준비생', '청년 계층', '신혼부부', '예비신혼부부', '한부모가족', '고령자', '주거급여 수급자',
+                          '산업단지근로자']
+        qual = []
+        income_cri = []
+
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[1]/td[1]').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[2]/td').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[3]/td[1]').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[4]/td[1]').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[5]/td').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[6]/td').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[7]/td[1]').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[8]/td[1]').text)
+        qual.append(
+            driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[9]/td[1]').text)
+
+        for i in range(len(qual)):
+            qual[i] = qual[i].replace('\n ', '')
+            qual[i] = qual[i].replace('\n', ' ')
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[1]/td[2]').text
+        tmp = tmp.replace('\n  ', ' ')
+        income_cri.append(tmp)
+        income_cri.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[3]/td[2]').text
+        tmp = tmp.replace('\n  ', ' ')
+        income_cri.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[4]/td[2]').text
+        tmp = tmp.replace('\n  ', ' ')
+        income_cri.append(tmp)
+        income_cri.append(tmp)
+        income_cri.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[7]/td[2]').text
+        tmp = tmp.replace('\n  ', ' ')
+        tmp = tmp.replace('\n', ' ')
+        income_cri.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[8]/td[2]').text
+        tmp = tmp.replace('\n  ', ' ')
+        tmp = tmp.replace('\n', ' ')
+        income_cri.append(tmp)
+
+        tmp = driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div/ul/li[1]/table/tbody/tr[9]/td[2]').text
+        tmp = tmp.replace('\n  ', ' ')
+        tmp = tmp.replace('\n', ' ')
+        income_cri.append(tmp)
+
+        moving_in_qual = pd.DataFrame({'class': classification, 'qualification': qual, 'income_criteria': income_cri})
+
+        moving_in_qual.to_csv('./data/service_guide/happy_house/moving_in_qual.csv',
+                              index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+
+        driver.close()
+
+    def max_living_term(self):
+        driver = selenium_set()
+        dirver.get(self.url_set)
+
+        # ----- 최대 거주 기간 -----------------------------------------------------------------------------------------
+        qual = []
+        max_term = []
+
+        qual = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div[3]/table/tbody/tr/th')
+        for i in range(len(qual)):
+            qual[i] = qual[i].text
+
+        max_term = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div[3]/table/tbody/tr/td')
+        for i in range(len(max_term)):
+            max_term[i] = max_term[i].text
+
+        max_term_df = pd.DataFrame({'qualification': qual, 'max_term': max_term})
+        max_term_df.to_csv('./data/service_guide/happy_house/max_term.csv',
+                           index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+
+    def lease_condition(self):
+        # ----- 임대 조건 -----------------------------------------------------------------------------------------
+        lease_con = ['공급대상자별 시중시세의 60~80%']
+        lease_condition = pd.DataFrame({'condition': lease_con})
+        lease_condition.to_csv('./data/service_guide/happy_house/lease_condition.csv',
+                               index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+    def apply_step(self):
+        driver = selenium_set(self)
+        driver.get(self.url_set)
+
+        # ----- 신청절차 -------------------------------------------------------------------------------------------------
+        step = []
+        step_des = []
+
+        step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div[5]/ul/li/ul/li/dl/dt')
+        for i in range(len(step)):
+            step[i] = step[i].text
+            step[i] = step[i].replace('\n', ' ')
+
+        step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div[5]/ul/li/ul/li/dl/dd')
+        for i in range(len(step_des)):
+            step_des[i] = step_des[i].text
+            step_des[i] = step_des[i].replace('\n  ', '')
+            step_des[i] = step_des[i].replace('\n', ' ')
+
+        apply_step = pd.DataFrame({"step": step, "describe": step_des})
+        apply_step.to_csv('./data/service_guide/happy_house/apply_step.csv',
+                          index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
 if __name__ == '__main__':
-    url_set = URL + service_code['전세임대']
+    url_set = URL + service_code['행복주택']
     
     driver = selenium_set()
     driver.get(url_set)
 
-    # ----- 신청방법 -----------------------------------------------------------------------------------------
+    # ----- 신청절차 -------------------------------------------------------------------------------------------------
 
     # --------------------------------------------------------------------------------------------------------------
-
     driver.close()
