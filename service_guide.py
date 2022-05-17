@@ -1732,16 +1732,167 @@ class dwelling_welfare_house:
         urllib.request.urlretrieve(img_1, './data/service_guide/dwelling_welfare_house/business_district.jpg')
         #-----------------------------------------------------------------------------------------------------------
 
+class Public_dormitory:
+    def __init__(self):
+        self.url_set = URL + service_code['공공기숙사']
+
+    def house_type(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 주택유형 ---------------------------------------------------------------------------------------------
+        classification = ['행복기숙사 (한국사학진흥재단)', '행복기숙사 (한국사학진흥재단)', '행복기숙사 (한국사학진흥재단)',
+                          '희망하우징 (서울주택도시공사)', '희망하우징 (서울주택도시공사)', '희망하우징 (서울주택도시공사)', ]
+        type = ['공공기숙사형', '공공기숙사형', '공공기숙사형', '다가구형', '원룸형', '공공기숙사형']
+
+        room = ['1인실', '2인실', '4인실', '1인1실 (호당 2~3실)', '1인1실 (호당 1실)', '1인실 또는 2인실']
+
+        recruiting_house_type = pd.DataFrame({'class': classification, 'type': type, 'room': room})
+        recruiting_house_type.to_csv('./data/service_guide/public_dormitory/recruiting_house_type.csv',
+                                     index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        # -----주거형태 ---------------------------------------------------------------------------------------------
+        type = []
+        note = []
+
+        type = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div[2]/ul/li/ul/li/table/tbody/tr/th')
+        for i in range(len(type)):
+            type[i] = type[i].text
+
+        note = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div[2]/ul/li/ul/li/table/tbody/tr/td')
+        for i in range(len(note)):
+            note[i] = note[i].text
+
+        dwelling_type = pd.DataFrame({'type': type, 'note': note})
+        dwelling_type.to_csv('./data/service_guide/public_dormitory/dwelling_type.csv',
+                             index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def apply_sub(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # -----신청 대상 ---------------------------------------------------------------------------------------------
+        # -- 행복 기숙사---
+        room = ['1인실', '1인실', '2인실', '2인실', '4인실', '4인실']
+        selection = ['공통 선발', '사회적배려대상 우선 선발', '공통 선발', '사회적배려대상 우선 선발',
+                     '공통 선발', '사회적배려대상 우선 선발']
+        des = []
+
+        tmp = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div[1]/ul/li/ul/li/table/tbody/tr[1]/td[1]').text
+
+        des.append(tmp)
+        des.append(tmp)
+        des.append(tmp)
+
+        tmp = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div[1]/ul/li/ul/li/table/tbody/tr[1]/td[2]').text
+        des.append(tmp)
+
+        tmp = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[4]/div[1]/ul/li/ul/li/table/tbody/tr[2]/td/div').text
+        des.append(tmp)
+        des.append(tmp)
+
+        happy_apply = pd.DataFrame({'room': room, 'selection': selection, 'description': des})
+        happy_apply.to_csv('./data/service_guide/public_dormitory/happy_apply.csv',
+                           index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        # -----신청 대상 ---------------------------------------------------------------------------------------------
+        # -- 희망 하우징---
+        apply = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div[2]/ul/li/ul/li').text]
+        note = [driver.find_element_by_xpath('//*[@id="sub_content"]/div[4]/div[2]/ul/li/span').text]
+
+        hope_apply = pd.DataFrame({'apply': apply, 'note': note})
+        hope_apply.to_csv('./data/service_guide/public_dormitory/hope_apply.csv',
+                          index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def select_qual(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # -----신청 대상 ---------------------------------------------------------------------------------------------
+        rank = []
+        happy = []
+        hope = []
+
+        rank = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/ul/li/table/tbody/tr/th')
+        for i in range(len(rank)):
+            rank[i] = rank[i].text
+
+        happy = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/ul/li/table/tbody/tr/td[1]')
+        for i in range(len(happy)):
+            happy[i] = happy[i].text
+
+        hope = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[5]/div/ul/li/ul/li/table/tbody/tr/td[2]')
+        for i in range(len(hope)):
+            hope[i] = hope[i].text
+
+        selection_crit = pd.DataFrame({'rank': rank, 'happy_dormitory': happy, 'hope_housing': hope})
+        selection_crit.to_csv('./data/service_guide/public_dormitory/selection_criteria.csv',
+                              index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def same_score_process(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # -----동일순위 경쟁시 입주자 선정방법 ---------------------------------------------------------------------------------------------
+        rank = []
+        happy = []
+        hope = []
+
+        rank = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div/ul/li/ul/li/table/tbody/tr/th')
+        for i in range(len(rank)):
+            rank[i] = rank[i].text
+
+        happy = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div/ul/li/ul/li/table/tbody/tr/td[1]')
+        for i in range(len(happy)):
+            happy[i] = happy[i].text
+
+        hope = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[6]/div/ul/li/ul/li/table/tbody/tr/td[2]')
+        for i in range(len(hope)):
+            hope[i] = hope[i].text
+
+        same_score_proc = pd.DataFrame({'rank': rank, 'happy_dormitory': happy, 'hope_housing': hope})
+        same_score_proc.to_csv('./data/service_guide/public_dormitory/same_score_process.csv',
+                               index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def apply_step(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 신청절차 ---------------------------------------------------------------------------------------------
+        step = []
+        step_des = []
+
+        step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[10]/div/ul/li/ul/li/dl/dt')
+        for i in range(len(step)):
+            step[i] = step[i].text
+            step[i] = step[i].replace('\n', ' ')
+
+        step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[10]/div/ul/li/ul/li/dl/dd')
+        for i in range(len(step_des)):
+            step_des[i] = step_des[i].text
+            step_des[i] = step_des[i].replace('\n  ', '')
+            step_des[i] = step_des[i].replace('\n', ' ')
+
+        apply_step = pd.DataFrame({"step": step, "describe": step_des})
+        apply_step.to_csv('./data/service_guide/public_dormitory/apply_step.csv',
+                          index=False, encoding='utf-8')
+        # ------------------------------------------------------
+        driver.close()
+
 if __name__ == '__main__':
-    url_set = URL + service_code['주거복지동주택']
+    url_set = URL + service_code['공공기숙사']
     
     driver = selenium_set()
     driver.get(url_set)
 
-    # ----- 사업지구 ---------------------------------------------------------------------------------------------
-
-
-    #supply_area_df.to_csv('./data/service_guide/dwelling_welfare_house/supply_area.csv',
-    #             index = False, encoding='utf-8')
-    # ------------------------------------------------------------------------------------------------------------------
-    driver.close()
