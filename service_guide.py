@@ -1471,13 +1471,146 @@ class Happy_House:
         # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
+class Public_Supply_Civilian_Lease:
+    def __init__(self):
+        self.url_set = URL + service_code['공공지원민간임대']
+
+    def intro(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 인포그래픽, 계획 -------------------------------------------------------------------------------------------------
+        img_1 = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[3]/div/ul/li[1]/div/img').get_attribute('src')
+        urllib.request.urlretrieve(img_1, './data/service_guide/public_support_civilian_lease/infographic.jpg')
+
+        img_2 = driver.find_element_by_xpath(
+            '//*[@id="sub_content"]/div[3]/div/ul/li[2]/div/img').get_attribute('src')
+        urllib.request.urlretrieve(img_2, './data/service_guide/public_support_civilian_lease/supply_plan.jpg')
+        # --------------------------------------------------------------------------------------------------------------
+
+        # ----- 계획 2 -------------------------------------------------------------------------------------------------
+        a_name = []
+        a_feature = []
+        gathering = []
+        quantity_all = []
+        quantity_youth = []
+
+        a_name = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[2]/ul/table/tbody/tr/td[1]')
+        for i in range(len(a_name)):
+            a_name[i] = a_name[i].text
+
+        a_feature = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[2]/ul/table/tbody/tr/td[2]')
+        for i in range(len(a_feature)):
+            a_feature[i] = a_feature[i].text
+
+        gathering = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[2]/ul/table/tbody/tr/td[3]')
+        for i in range(len(gathering)):
+            gathering[i] = gathering[i].text
+
+        quantity_all = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[3]/div/ul/li[2]/ul/table/tbody/tr/td[4]')
+        for i in range(len(quantity_all)):
+            quantity_all[i] = quantity_all[i].text
+
+        quantity_youth = driver.find_elements_by_xpath(
+            '//*[@id="sub_content"]/div[3]/div/ul/li[2]/ul/table/tbody/tr/td[5]')
+        for i in range(len(quantity_youth)):
+            quantity_youth[i] = quantity_youth[i].text
+
+        supply_plan_2 = pd.DataFrame({'area_name': a_name, 'feature': a_feature, 'recruit': gathering,
+                                      'quantity(all)': quantity_all, 'quantity(youth)': quantity_youth})
+
+        supply_plan_2.to_csv('./data/service_guide/public_support_civilian_lease/supply_plan2.csv',
+                             index=False, encoding='utf-8')
+        # --------------------------------------------------------------------------------------------------------------
+        # ----- 공공지원민간임대주택 vs 뉴스테이 -------------------------------------------------------------------------------------------------
+        classification = ['의무임대기간', '임대료 상승률', '초기 임대료', '초기 임대료', '입주 자격', '입지 여건']
+        pu_s_c = []
+        newStay = []
+
+        pu_s_c = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[3]/table/tbody/tr/td[1]')
+        for i in range(len(pu_s_c)):
+            pu_s_c[i] = pu_s_c[i].text
+
+        newStay = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li[3]/table/tbody/tr/td[2]')
+        for i in range(len(newStay)):
+            newStay[i] = newStay[i].text
+        newStay.append(newStay[-1])
+
+        p_vs_newStay = pd.DataFrame({'class': classification, 'public_support': pu_s_c, 'NewStay': newStay})
+
+        p_vs_newStay.to_csv('./data/service_guide/public_support_civilian_lease/p_vs_newStay.csv',
+                            index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def qulification_def(self):
+        # ----- 입주자격 -------------------------------------------------------------------------------------------------
+        classification = ['무주택자', '주거지원 계층']
+        supply = ['우선', '공급물량의 20%이상 특별 공급']
+        note = ['', '주거지원계층 : 도시근로자 평균소득 120% 이하, 19～39세 1인 가구, 혼인 7년 이내 신혼부부, 고령층(65세 이상) 등']
+
+        qualification = pd.DataFrame({'class': classification, 'supply': supply, 'note': note})
+        qualification.to_csv('./data/service_guide/public_support_civilian_lease/qualification.csv',
+                             index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+
+    def apply_step(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+        # ----- 신청절차 ---------------------------------------------------------------------------------------------
+        step = []
+        step_des = []
+
+        step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[2]/ul/li/ul/li/dl/dt')
+        for i in range(len(step)):
+            step[i] = step[i].text
+            step[i] = step[i].replace('\n', ' ')
+
+        step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[2]/ul/li/ul/li/dl/dd')
+        for i in range(len(step_des)):
+            step_des[i] = step_des[i].text
+            step_des[i] = step_des[i].replace('\n  ', '')
+            step_des[i] = step_des[i].replace('\n', ' ')
+
+        apply_step = pd.DataFrame({"step": step, "describe": step_des})
+        apply_step.to_csv('./data/service_guide/public_support_civilian_lease/apply_step.csv',
+                          index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def detail_info_def(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+        # ----- 상세안내 ---------------------------------------------------------------------------------------------
+        site = ['공공지원민간임대주택 홈페이지', '입주자모집 알림정보', '공공지원민간임대주택 블로그', '아파트 투유', '민간임대정책과']
+        address = []
+
+        address = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[3]/div/map/area')
+        for i in range(len(address)):
+            address[i] = address[i].get_attribute('href')
+
+        address.append('044-201-4472')
+
+        detail_info = pd.DataFrame({'site': site, 'address': address})
+        detail_info.to_csv('./data/service_guide/public_support_civilian_lease/detail_info.csv',
+                           index=False, encoding='utf-8')
+
+        # --------------------------------------------------------------------------------------------------------------
+        driver.close()
+
 if __name__ == '__main__':
-    url_set = URL + service_code['행복주택']
+    url_set = URL + service_code['공공지원민간임대']
     
     driver = selenium_set()
     driver.get(url_set)
 
-    # ----- 신청절차 -------------------------------------------------------------------------------------------------
+    # ----- 상세안내 ---------------------------------------------------------------------------------------------
+
 
     # --------------------------------------------------------------------------------------------------------------
     driver.close()
