@@ -1488,8 +1488,7 @@ class Public_Supply_Civilian_Lease:
             '//*[@id="sub_content"]/div[3]/div/ul/li[2]/div/img').get_attribute('src')
         urllib.request.urlretrieve(img_2, './data/service_guide/public_support_civilian_lease/supply_plan.jpg')
         # --------------------------------------------------------------------------------------------------------------
-
-        # ----- 계획 2 -------------------------------------------------------------------------------------------------
+        # ----- 계획 2 --------------------------------------------------------------------------------------------------
         a_name = []
         a_feature = []
         gathering = []
@@ -1542,7 +1541,6 @@ class Public_Supply_Civilian_Lease:
 
         p_vs_newStay.to_csv('./data/service_guide/public_support_civilian_lease/p_vs_newStay.csv',
                             index=False, encoding='utf-8')
-
         # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
@@ -1555,7 +1553,6 @@ class Public_Supply_Civilian_Lease:
         qualification = pd.DataFrame({'class': classification, 'supply': supply, 'note': note})
         qualification.to_csv('./data/service_guide/public_support_civilian_lease/qualification.csv',
                              index=False, encoding='utf-8')
-
         # --------------------------------------------------------------------------------------------------------------
 
     def apply_step(self):
@@ -1579,7 +1576,6 @@ class Public_Supply_Civilian_Lease:
         apply_step = pd.DataFrame({"step": step, "describe": step_des})
         apply_step.to_csv('./data/service_guide/public_support_civilian_lease/apply_step.csv',
                           index=False, encoding='utf-8')
-
         # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
@@ -1599,18 +1595,153 @@ class Public_Supply_Civilian_Lease:
         detail_info = pd.DataFrame({'site': site, 'address': address})
         detail_info.to_csv('./data/service_guide/public_support_civilian_lease/detail_info.csv',
                            index=False, encoding='utf-8')
-
         # --------------------------------------------------------------------------------------------------------------
         driver.close()
 
+class dwelling_welfare_house:
+    def __init__(self):
+        self.url_set = URL + service_code['주거복지동주택']
+
+    def intro_def(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 소개 -----------------------------------------------------------------------------------------------------
+        txt = []
+        txt = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[3]/div/ul/li')
+        for i in range(len(txt)):
+            txt[i] = txt[i].text
+
+        intro = pd.DataFrame({'intro': txt})
+        intro.to_csv('./data/service_guide/dwelling_welfare_house/intro.csv',
+                     index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def qualification_def(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 자격 -----------------------------------------------------------------------------------------------------
+        type = []
+        qual = []
+        note = []
+
+        type = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[1]/ul/li/table/tbody/tr/th')
+        for i in range(len(type)):
+            type[i] = type[i].text
+            type[i] = type[i].replace('\n', '')
+
+        qual = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[1]/ul/li/table/tbody/tr/td[1]')
+        for i in range(len(qual)):
+            qual[i] = qual[i].text
+            qual[i] = qual[i].replace('\n', '')
+
+        note = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[1]/ul/li/table/tbody/tr/td[2]')
+        for i in range(len(note)):
+            note[i] = note[i].text
+            note[i] = note[i].replace('\n', '')
+
+        qualification = pd.DataFrame({'type': type, 'qualification': qual, 'note': note})
+        qualification.to_csv('./data/service_guide/dwelling_welfare_house/qualification.csv',
+                             index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def apply_step(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 신청절차 ---------------------------------------------------------------------------------------------
+        step = []
+        step_des = []
+
+        step = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[5]/ul/li/ul/li/dl/dt')
+        for i in range(len(step)):
+            step[i] = step[i].text
+            step[i] = step[i].replace('\n', ' ')
+
+        step_des = driver.find_elements_by_xpath('//*[@id="sub_content"]/div[4]/div[5]/ul/li/ul/li/dl/dd')
+        for i in range(len(step_des)):
+            step_des[i] = step_des[i].text
+            step_des[i] = step_des[i].replace('\n  ', '')
+            step_des[i] = step_des[i].replace('\n', ' ')
+
+        apply_step = pd.DataFrame({"step": step, "describe": step_des})
+        apply_step.to_csv('./data/service_guide/dwelling_welfare_house/apply_step.csv',
+                          index=False, encoding='utf-8')
+        # ------------------------------------------------------
+
+    def supply_area(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 공급지역 ---------------------------------------------------------------------------------------------
+        b_area = []
+        location = []
+        s_num = []
+        accept_date = []
+        start_date = []
+        re_date = []
+        moving_in_date = []
+
+        b_area = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/th/a')
+        for i in range(len(b_area)):
+            b_area[i] = b_area[i].text
+
+        location = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/td[1]')
+        for i in range(len(location)):
+            location[i] = location[i].text
+
+        s_num = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/td[2]')
+        for i in range(len(s_num)):
+            s_num[i] = s_num[i].text
+
+        accept_date = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/td[3]')
+        for i in range(len(accept_date)):
+            accept_date[i] = accept_date[i].text
+
+        start_date = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/td[4]')
+        for i in range(len(start_date)):
+            start_date[i] = start_date[i].text
+
+        re_date = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/td[5]')
+        for i in range(len(re_date)):
+            re_date[i] = re_date[i].text
+
+        moving_in_date = driver.find_elements_by_xpath('//*[@id="wlfareDongListTbody"]/tr/td[6]')
+        for i in range(len(moving_in_date)):
+            moving_in_date[i] = moving_in_date[i].text
+
+        supply_area_df = pd.DataFrame({'business_area': b_area, 'location': location, 'supply_num': s_num,
+                                       'business_approval': accept_date, 'construction_start': start_date,
+                                       'tenant_recruitment': re_date, 'moving_in_time': moving_in_date})
+
+        supply_area_df.to_csv('./data/service_guide/dwelling_welfare_house/supply_area.csv',
+                              index=False, encoding='utf-8')
+        # ------------------------------------------------------------------------------------------------------------------
+        driver.close()
+
+    def business_ditrict(self):
+        driver = selenium_set()
+        driver.get(self.url_set)
+
+        # ----- 사업지구 ---------------------------------------------------------------------------------------------
+        img_1 = driver.find_element_by_xpath(
+            '//*[@id="bsnesDstrctMap"]/div/ul/li/div/img').get_attribute('src')
+        urllib.request.urlretrieve(img_1, './data/service_guide/dwelling_welfare_house/business_district.jpg')
+        #-----------------------------------------------------------------------------------------------------------
+
 if __name__ == '__main__':
-    url_set = URL + service_code['공공지원민간임대']
+    url_set = URL + service_code['주거복지동주택']
     
     driver = selenium_set()
     driver.get(url_set)
 
-    # ----- 상세안내 ---------------------------------------------------------------------------------------------
+    # ----- 사업지구 ---------------------------------------------------------------------------------------------
 
 
-    # --------------------------------------------------------------------------------------------------------------
+    #supply_area_df.to_csv('./data/service_guide/dwelling_welfare_house/supply_area.csv',
+    #             index = False, encoding='utf-8')
+    # ------------------------------------------------------------------------------------------------------------------
     driver.close()
