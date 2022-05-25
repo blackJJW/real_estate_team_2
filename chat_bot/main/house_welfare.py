@@ -291,7 +291,7 @@ def housing_welfare():
                   "description" : welfare_info_house.iloc[3]['dedicated_area']
                 },
                 {
-                  "title" : "임대조건",
+                  "title" : "지원한도",
                   "description" : welfare_info_house.iloc[3]['condition']
                 }
               ],
