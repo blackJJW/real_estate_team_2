@@ -5,6 +5,7 @@ from . import main_menu
 from . import house_welfare_detail
 from . import house_welfare_detail_1
 from . import house_welfare_detail_2
+from . import house_welfare_detail_3
 
 application = Flask(__name__)
 
@@ -14,4 +15,5 @@ application.register_blueprint(main_menu.blue_main_menu)
 application.register_blueprint(house_welfare_detail.blue_house_welfare_detail)
 application.register_blueprint(house_welfare_detail_1.blue_house_welfare_detail_1)
 application.register_blueprint(house_welfare_detail_2.blue_house_welfare_detail_2)
+application.register_blueprint(house_welfare_detail_3.blue_house_welfare_detail_3)
 # ----------------------------------------------------------------------------------------------
