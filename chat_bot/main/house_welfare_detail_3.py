@@ -12,6 +12,7 @@ service_code = {'통합공공임대주택' : 'RH112', '영구임대주택' : 'RH
 URL = "https://www.myhome.go.kr/hws/portal/cont/selectContRentalView.do#guide="
 # ------------------------------------------------------------------------------------------------------
 
+
 blue_house_welfare_detail_3 = Blueprint("house_welfare_detail_3", __name__, url_prefix='/house_welfare_detail_3')
 
 @blue_house_welfare_detail_3.route("/")
@@ -28,7 +29,15 @@ def show_intro():
     if welfare_type == '행복주택':
         intro_data = pd.read_csv("./data/house_welfare/happy_house/feature.csv")
         intro_data_1 = pd.read_csv("./data/house_welfare/happy_house/vs_table.csv")
+    
+    elif welfare_type == '주거복지동주택':
+        intro_data = pd.read_csv("./data/house_welfare/dwelling_welfare/intro.csv")
+        
+    else:
+        pass
     # -------------------------------------------------------------------------------------------
+    
+    # ----------------------------------------------
     res = {
     "version": "2.0",
     "template": {
@@ -36,6 +45,7 @@ def show_intro():
         }}
     
     tmp_quickReplies_set = {"quickReplies": []}
+    # ----------------------------------------------
     
     if welfare_type == '행복주택':
         res['template']['outputs'].append({"simpleText": {"text": "■ 특장점" + "\n\t" 
@@ -63,12 +73,25 @@ def show_intro():
                     "title": "공급계획",
                     "thumbnail": {"imageUrl": "https://www.myhome.go.kr/images/portal/myhomeinfo/guideimg/newStay_06.jpg",
                                  "link":{"web" : "https://www.myhome.go.kr/images/portal/myhomeinfo/guideimg/newStay_06.jpg"}}}})
+        
+    elif welfare_type == '주거복지동주택':
+        res['template']['outputs'].append({"simpleText": {"text": "■ 주거복지동 주택사업 소개" + "\n\n\t" 
+                                                      + "♤ " + intro_data.iloc[0]['intro'] + '\n\n\t'
+                                                      + "♤ " + intro_data.iloc[1]['intro'] + '\n\n\t' 
+                                                      + "♤ " + intro_data.iloc[2]['intro']}})
+        res['template']['outputs'].append({"basicCard": {
+                    "title": "",
+                    "thumbnail": {"imageUrl": "https://www.myhome.go.kr/images/portal/myhomeinfo/guideimg/hwd1_1.jpg",
+                                 "link":{"web" : "https://www.myhome.go.kr/images/portal/myhomeinfo/guideimg/hwd1_1.jpg"}}}})
+        
+        
     res['template']['outputs'].append({"basicCard": {"title": welfare_type + " 링크", "description": "자세한 사항은 링크 연결로...",
                             "thumbnail": {"imageUrl": ""},
                             "buttons": [{
                                         "label": "링크연결",
                                         "action": "webLink",
                                         "webLinkUrl": URL + service_code[welfare_type]}]}})
+    
     
     if welfare_type == '행복주택':
         tmp_quickReplies_set['quickReplies'].append({"label": "입주자격", "action": "block", 
@@ -80,6 +103,9 @@ def show_intro():
                                                      "blockId": "628b0241bacfd86a3725d282", "extra": {"welfare_type" : welfare_type}})
         tmp_quickReplies_set['quickReplies'].append({"label": "신청절차", "action": "block", 
                                                      "blockId": "628b38eb055a574d7df53a46", "extra": {"welfare_type" : welfare_type}})
+    elif welfare_type == '주거복지동주택':
+        tmp_quickReplies_set['quickReplies'].append({"label": "입주 자격·선정순위", "action": "block", 
+                                                     "blockId": "628b412f299dbd02ee7a6666", "extra": {"welfare_type" : welfare_type}})
         
     tmp_quickReplies_set['quickReplies'].append({"label": "주택복지", "action": "block", 
                                                      "blockId": "62859d5e33d26f492e9e84ed"})
@@ -100,6 +126,8 @@ def show_max_term():
     if welfare_type == '행복주택':
         term_data = pd.read_csv("./data/house_welfare/happy_house/max_term.csv")
     # -------------------------------------------------------------------------------------------
+    
+    # ----------------------------------------------
     res = {
     "version": "2.0",
     "template": {
@@ -107,6 +135,7 @@ def show_max_term():
         }}
     
     tmp_quickReplies_set = {"quickReplies": []}
+    # ----------------------------------------------
     
     res['template']['outputs'].append({"simpleText": {"text": "■ 최대 거주기간" + "\n\n\t" 
                                                       + "♤ " + term_data.iloc[0]['qualification'] + '\n : \n\t' 
@@ -154,6 +183,8 @@ def show_detail_info():
     if welfare_type == '공공지원민간임대주택':
         info_data = pd.read_csv("./data/house_welfare/public_support_lease/detail_info.csv")
     # -------------------------------------------------------------------------------------------
+    
+    # ----------------------------------------------
     res = {
     "version": "2.0",
     "template": {
@@ -161,6 +192,7 @@ def show_detail_info():
         }}
     
     tmp_quickReplies_set = {"quickReplies": []}
+    # ----------------------------------------------
     
     res['template']['outputs'].append({
         "basicCard": {

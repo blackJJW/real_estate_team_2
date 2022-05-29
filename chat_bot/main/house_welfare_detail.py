@@ -38,6 +38,8 @@ def show_moving_in_qual_ranking():
         moving_data = pd.read_csv("./data/house_welfare/permanent_lease/Selection_Ranking.csv")
     elif welfare_type == '공공임대주택':
         moving_data = pd.read_csv("./data/house_welfare/public_lease/moving_in_selection_rank.csv")
+    elif welfare_type == '주거복지동주택':
+        moving_data = pd.read_csv("./data/house_welfare/dwelling_welfare/qualification.csv")
     else:
         pass
     # ------------------------------------------------------------------------------------------------
@@ -54,6 +56,23 @@ def show_moving_in_qual_ranking():
         res['template']['outputs'].append({"simpleText": {"text": "■ 입주자 선정순위" + "\n\n"
                             + '♤ ' + str(moving_data.iloc[0]['rank']) + ' :' + '\n\n\t\t' + str(moving_data.iloc[0]['qualification']) + '\n\n'
                             + '♤ ' + str(moving_data.iloc[1]['rank']) + ' :' + '\n\n\t\t' + str(moving_data.iloc[1]['qualification'])}})
+        
+    elif welfare_type == '주거복지동주택':
+        res['template']['outputs'].append({"simpleText": {"text": "■ 입주자격 및 선정순위" + "\n\n"
+                            + "- 입주자 모집공고일 현재 해당주택에 임대차 계약을 체결하고 거주중인 기존 임차인으로 아래의 입주자격을 만족하는 자" + '\n\n'
+                            + '♤ ' + str(moving_data.iloc[0]['type']) + ' :' + '\n\n\t\t' + str(moving_data.iloc[0]['qualification']) + '\n\n'
+                            + str(moving_data.iloc[0]['note'])+ '\n\n\t\t'
+                            + '♤ ' + str(moving_data.iloc[1]['type']) + ' :' + '\n\n\t\t' + str(moving_data.iloc[1]['qualification']) + '\n\n'
+                            + str(moving_data.iloc[1]['note'])+ '\n\n\t\t'
+                            + "- 생계·의료급여수급자 (공공주택특별법 시행규칙의 별표3 제1호 가목, 나목, 다목, 라목의 해당자)" + '\n'
+                                                          + "① 국민기초생활보장법상 생계급여수급자 또는 의료급여수급자" + '\n' 
+                                                          + "② 국가유공자 등으로서 수급자 선정기준의 소득인정액 이하인 자" + '\n' 
+                                                          + "③ 일본군위안부 피해자" + '\n' 
+                                                          + "④ 지원대상 한부모가족"                             
+                                                         }})
+    
+    else:
+        pass
     
     res['template']['outputs'].append({"basicCard": {"title": welfare_type + " 링크", "description": "자세한 사항은 링크 연결로...",
                                                          "thumbnail": {"imageUrl": ""},
@@ -62,9 +81,10 @@ def show_moving_in_qual_ranking():
                                                                       "action": "webLink",
                                                                       "webLinkUrl": URL + service_code[welfare_type]}]}})
     
-    if welfare_type != '공공임대주택': 
-        tmp_quickReplies_set['quickReplies'].append({"label": "입주자격", "action": "block",
-                                                     "blockId": "628b0241bacfd86a3725d282", "extra": {"welfare_type" : welfare_type}})
+    #if welfare_type != '공공임대주택': 
+    #    tmp_quickReplies_set['quickReplies'].append({"label": "입주자격", "action": "block",
+    #                                                "blockId": "628b0241bacfd86a3725d282", "extra": {"welfare_type" : welfare_type}})
+    
     if welfare_type == '공공임대주택':
         tmp_quickReplies_set['quickReplies'].append({"label": "주택유형", "action": "block", 
                                                      "blockId": "628dc63d43b3015cb0df8a2c", "extra": {"welfare_type" : welfare_type}})
@@ -72,6 +92,10 @@ def show_moving_in_qual_ranking():
                                                      "blockId": "628dcfa251c40d32c6d8a42e", "extra": {"welfare_type" : welfare_type}})
         tmp_quickReplies_set['quickReplies'].append({"label": "분양전환", "action": "block", 
                                                      "blockId": "628dd5c77befc3101c3bad00", "extra": {"welfare_type" : welfare_type}})
+        
+    elif welfare_type == '주거복지동주택':
+        tmp_quickReplies_set['quickReplies'].append({"label": "소개", "action": "block", 
+                                                     "blockId": "628ee1f87bd2fd433357fef8", "extra": {"welfare_type" : welfare_type}})
         
     tmp_quickReplies_set['quickReplies'].append({"label": "신청절차", "action": "block",
                                                      "blockId": "628b38eb055a574d7df53a46", "extra": {"welfare_type" : welfare_type}})
@@ -116,7 +140,8 @@ def show_apply_step():
         step_data = pd.read_csv("./data/house_welfare/happy_house/apply_step.csv")
     elif welfare_type == '공공지원민간임대주택':
         step_data = pd.read_csv("./data/house_welfare/public_support_lease/apply_step.csv")
-        
+    elif welfare_type == '주거복지동주택':
+        step_data = pd.read_csv("./data/house_welfare/dwelling_welfare/apply_step.csv")    
     else:
         pass
     #-----------------------------------------------------------------------------------------------
@@ -204,6 +229,12 @@ def show_apply_step():
                                                      "blockId": "628b0241bacfd86a3725d282", "extra": {"welfare_type" : welfare_type}})
         tmp_quickReplies_set['quickReplies'].append({"label": "상세안내", "action": "block", 
                                                      "blockId": "628ef4c77befc3101c3bc601", "extra": {"welfare_type" : welfare_type}})
+    elif welfare_type == '주거복지동주택':
+        tmp_quickReplies_set['quickReplies'].append({"label": "소개", "action": "block", 
+                                                     "blockId": "628ee1f87bd2fd433357fef8", "extra": {"welfare_type" : welfare_type}})
+        tmp_quickReplies_set['quickReplies'].append({"label": "입주 자격·선정순위", "action": "block", 
+                                                     "blockId": "628b412f299dbd02ee7a6666", "extra": {"welfare_type" : welfare_type}})
+    
     else:
         pass
     
@@ -396,6 +427,9 @@ def show_moving_in_qual():
         qual = pd.read_csv("./data/house_welfare/long_term_lease/homeless_household_note.csv")
     elif welfare_type == '행복주택':
         qual = pd.read_csv("./data/house_welfare/happy_house/moving_in_qual.csv")
+    elif welfare_type == '공공기숙사':
+        qual = pd.read_csv("./data/house_welfare/public_dormitory/happy_apply.csv")
+        qual_1 = pd.read_csv("./data/house_welfare/public_dormitory/hope_apply.csv")
     else:
         pass
     # --------------------------------------------------------------------------------------------
@@ -413,7 +447,6 @@ def show_moving_in_qual():
         res['template']['outputs'].append({"simpleText": {"text": "■ 입주자격" + "\n\n" 
                             + "입주자 모집공고일 현재 아래의 자격요건에 해당하는 자" + "\n\n"
                             }})
-    
     else:
         pass
     
@@ -453,6 +486,12 @@ def show_moving_in_qual():
                             + '♤ ' + '무주택자 우선' + '\n\n'
                             + '♤ ' + '공급물량의 20%이상은 청년·신혼부부 등 주거지원 계층에 특별공급' + '\n\n\t'
                             + '- 주거지원계층 : 도시근로자 평균소득 120% 이하, 19～39세 1인 가구, 혼인 7년 이내 신혼부부, 고령층(65세 이상) 등'}})
+        
+    elif welfare_type == '공공기숙사':
+        res['template']['outputs'].append({"simpleText": {"text": "■ 신청대상" + "\n\n" 
+                            + '♤ ' + str(qual.iloc[0]['room']) + ' :' + '\n\n\t\t' + str(qual.iloc[0]['selection']) + '\n\n\n'
+                            + '♤ ' + str(qual.iloc[0]['description']) + '\n\n\n'
+                            }})
     
     else:
         res['template']['outputs'].append({"simpleText": {"text": "■ 무주택세대구성원" + "\n\n" 
@@ -617,6 +656,21 @@ def blue_house_welfare_detail_selection():
                                                      "blockId": "628b38eb055a574d7df53a46", "extra": {"welfare_type" : welfare_type}})
         tmp_quickReplies_set['quickReplies'].append({"label": "상세안내", "action": "block", 
                                                      "blockId": "628ef4c77befc3101c3bc601", "extra": {"welfare_type" : welfare_type}})
+        
+    elif welfare_type == '주거복지동주택':
+        tmp_quickReplies_set['quickReplies'].append({"label": "소개", "action": "block", 
+                                                     "blockId": "628ee1f87bd2fd433357fef8", "extra": {"welfare_type" : welfare_type}})
+        tmp_quickReplies_set['quickReplies'].append({"label": "입주 자격·선정순위", "action": "block", 
+                                                     "blockId": "628b412f299dbd02ee7a6666", "extra": {"welfare_type" : welfare_type}})
+        tmp_quickReplies_set['quickReplies'].append({"label": "신청절차", "action": "block", 
+                                                     "blockId": "628b38eb055a574d7df53a46", "extra": {"welfare_type" : welfare_type}})
+        tmp_quickReplies_set['quickReplies'].append({"label": "공급지역", "action": "block", 
+                                                     "blockId": "62932d9751c40d32c6d8f583", "extra": {"welfare_type" : welfare_type}})
+    elif welfare_type == '공공기숙사':
+        tmp_quickReplies_set['quickReplies'].append({"label": "대상주택", "action": "block", 
+                                                     "blockId": "628ed39b7bd2fd433357fa84", "extra": {"welfare_type" : welfare_type}})
+        tmp_quickReplies_set['quickReplies'].append({"label": "신청대상", "action": "block", 
+                                                     "blockId": "628b0241bacfd86a3725d282", "extra": {"welfare_type" : welfare_type}})
     else:
         pass
 

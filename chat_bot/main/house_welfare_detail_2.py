@@ -123,6 +123,11 @@ def show_target_house():
     # ----- data url ----------------------------------------------------------------------------
     if welfare_type == '전세임대주택':
         target_data = pd.read_csv("./data/house_welfare/deposit_lease/house_object.csv")
+    elif welfare_type == '공공기숙사':
+        target_data = pd.read_csv("./data/house_welfare/public_dormitory/recruiting_house_type.csv")
+        target_data_1 = pd.read_csv("./data/house_welfare/public_dormitory/dwelling_type.csv")
+    else:
+        pass
     # -------------------------------------------------------------------------------------------
     res = {
     "version": "2.0",
@@ -132,10 +137,36 @@ def show_target_house():
     
     tmp_quickReplies_set = {"quickReplies": []}
     
-    res['template']['outputs'].append({"simpleText": {"text": "■ 대상주택" + "\n\n\t" 
+    if welfare_type == '전세임대주택':
+        res['template']['outputs'].append({"simpleText": {"text": "■ 대상주택" + "\n\n\t" 
                                                       + "♤ " + target_data.iloc[0]['object'] + '\n\t' 
                                                           + target_data.iloc[0]['note']
                                                       }})
+        
+    elif welfare_type == '공공기숙사':
+        res['template']['outputs'].append({"simpleText": {"text": "■ 주택유형" + "\n\n\t" 
+                                                      + "♤ " + target_data.iloc[0]['class'] + '\n\t' 
+                                                          + "* " + target_data.iloc[0]['type'] + '\n\t\t'
+                                                              + "- " + target_data.iloc[0]['room'] + '\n\t\t'
+                                                              + "- " + target_data.iloc[1]['room'] + '\n\t\t'
+                                                              + "- " + target_data.iloc[2]['room'] + '\n\n'
+                                                      + "♤ " + target_data.iloc[3]['class'] + '\n\t' 
+                                                          + "* " + target_data.iloc[3]['type'] + '\n\t\t'
+                                                              + "- " + target_data.iloc[3]['room'] + '\n\t\t'
+                                                              + "- " + target_data.iloc[4]['room'] + '\n\t\t'
+                                                              + "- " + target_data.iloc[5]['room']
+                                                      }})
+        res['template']['outputs'].append({"simpleText": {"text": "■ 주거형태" + "\n\n\t" 
+                                                      + "♤ " + target_data_1.iloc[0]['type'] + '\n\t' 
+                                                          + target_data_1.iloc[0]['note'] + '\n\n'
+                                                      + "♤ " + target_data_1.iloc[1]['type'] + '\n\t' 
+                                                          + target_data_1.iloc[1]['note'] + '\n\n'
+                                                      + "♤ " + target_data_1.iloc[2]['type'] + '\n\t' 
+                                                          + target_data_1.iloc[2]['note'] 
+                                                      }})
+    else:
+        pass
+    
     res['template']['outputs'].append({"basicCard": {"title": welfare_type + " 링크", "description": "자세한 사항은 링크 연결로...",
                             "thumbnail": {"imageUrl": ""},
                             "buttons": [{
